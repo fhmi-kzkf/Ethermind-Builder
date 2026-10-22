@@ -104,3 +104,6 @@ frontend/dist/
 # --- Sandbox runtime ---
 backend/sandbox/tmp/
 backend/sandbox/workspaces/
+
+# Saved third-party reference material
+reference/
