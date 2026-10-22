@@ -1,0 +1,224 @@
+/* ---------- Signed-in screens: project list, admin, sign-in dialog ---------- */
+.workspace {
+  padding-block: clamp(32px, 5vw, 64px) var(--space-8);
+}
+.workspace__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+.workspace__head h1 {
+  font-size: var(--text-3xl);
+}
+
+.toolbar {
+  display: flex;
+  align-items: end;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+.toolbar .field--grow {
+  flex: 1 1 16rem;
+}
+.toolbar .field--status {
+  flex: 0 0 14rem;
+}
+
+/* Project list: one row per project, columns on wide screens, stacked on phones. */
+.worklist {
+  border-top: 1px solid var(--line-strong);
+}
+.work-row {
+  position: relative;
+  display: grid;
+  /* The last column has a fixed width so status and date line up in every row, with or without the app link. */
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr) 11.5rem 20rem;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+.work-row__name {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.work-row__name:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.work-row__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.work-row--skeleton {
+  min-height: 76px;
+}
+.work-count {
+  font-size: var(--text-sm);
+  color: var(--muted);
+  margin-bottom: var(--space-2);
+}
+
+@media (max-width: 760px) {
+  .work-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+  .work-row__actions {
+    justify-content: flex-start;
+    margin-top: var(--space-2);
+  }
+  .work-row__actions .btn--quiet {
+    margin-left: calc(var(--space-4) * -1);
+  }
+  .toolbar .field--status {
+    flex: 1 1 100%;
+  }
+}
+
+/* Admin */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: var(--space-5) var(--space-6);
+}
+.fact dt {
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+.fact dd {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.fact dd small {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 450;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+.admin-section {
+  margin-top: var(--space-7);
+}
+.admin-section > h2 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-4);
+}
+
+.table-wrap {
+  position: relative; /* keeps visually hidden labels inside the scroll box instead of widening the page */
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.table caption {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  color: var(--muted);
+}
+.table th,
+.table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid var(--line);
+}
+.table thead th {
+  border-top: 0;
+  font-weight: 600;
+  background: var(--surface-warm);
+  white-space: nowrap;
+}
+.table .num {
+  text-align: right;
+}
+.table td.actions {
+  white-space: nowrap;
+}
+.table .cell-name {
+  min-width: 12rem;
+  max-width: 22rem;
+}
+.table .hint {
+  overflow-wrap: anywhere;
+}
+.table--models {
+  min-width: 38rem;
+}
+.table--jobs {
+  min-width: 62rem;
+}
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Sign-in dialog */
+.auth-modes {
+  margin-bottom: var(--space-5);
+}
+.auth-sso {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+.auth-dev {
+  margin-top: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+.field-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: stretch;
+}
+.field-row .input {
+  flex: 1;
+}
+
+.auth-modes .tab {
+  flex: 1;
+}
+.auth-modes .tab[aria-pressed="true"] {
+  color: var(--ink);
+}
+.auth-modes .tab[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: -1px;
+  height: 2px;
+  background: var(--accent);
+}

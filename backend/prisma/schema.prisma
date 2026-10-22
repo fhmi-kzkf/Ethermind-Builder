@@ -1,0 +1,236 @@
+// Prisma Schema for Ethermind AI App Builder
+// Standardized on SQLite for V1 with seamless portability to PostgreSQL
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("client") // client | operator | admin
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  projects Project[]
+
+  @@map("users")
+}
+
+model Project {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  status    String   @default("draft") // draft | planning | building | ready | live | failed | needs_review
+  repoPath  String?  @map("repo_path")
+  stack     String   @default("nextjs-sqlite-tailwind")
+  // The public name of the live app (slug.apps-domain). It stays reserved for the project even when unpublished.
+  slug            String?   @unique
+  // The version (job) the live app runs. Null means nothing is published.
+  liveJobId       String?   @map("live_job_id")
+  livePublishedAt DateTime? @map("live_published_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation Conversation?
+  specs        Spec[]
+  jobs         Job[]
+  versions     Version[]
+  deployments  Deployment[]
+  usageRecords UsageRecord[]
+  payments     Payment[]
+
+  @@map("projects")
+}
+
+/// One QRIS order for the source-code download of a project. The buyer transfers `total` (price plus a unique code),
+/// and an operator confirms it against the merchant's mutation list: there is no gateway callback.
+model Payment {
+  id          String    @id @default(uuid())
+  projectId   String    @map("project_id")
+  userId      String    @map("user_id")
+  amount      Int // listed price in rupiah
+  uniqueCode  Int       @map("unique_code") // 1..999, makes the transferred total recognisable
+  total       Int // amount + uniqueCode, embedded in the QR
+  status      String    @default("pending") // pending | reported | paid | rejected | expired
+  qrisPayload String    @map("qris_payload")
+  expiresAt   DateTime  @map("expires_at")
+  reportedAt  DateTime? @map("reported_at")
+  paidAt      DateTime? @map("paid_at")
+  confirmedBy String?   @map("confirmed_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, status])
+  @@map("payments")
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  projectId String   @unique @map("project_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String   @map("conversation_id")
+  role           String // user | assistant | system
+  content        String
+  metadata       String? // JSON serialized string for clarification options, quick replies, attachments
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Spec {
+  id         String    @id @default(uuid())
+  projectId  String    @map("project_id")
+  version    Int       @default(1)
+  content    String // JSON: features, pages, schema, userRoles, apiEndpoints, designGuidelines
+  approvedAt DateTime? @map("approved_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  jobs    Job[]
+
+  @@map("specs")
+}
+
+model Job {
+  id                String    @id @default(uuid())
+  projectId         String    @map("project_id")
+  specId            String?   @map("spec_id")
+  type              String    @default("build") // build | revision
+  status            String    @default("pending") // pending | running | paused | failed | completed | cancelled | needs_review
+  stepCount         Int       @default(0) @map("step_count")
+  maxSteps          Int       @default(30) @map("max_steps")
+  tokenBudget       Int       @default(250000) @map("token_budget")
+  tokensUsed        Int       @default(0) @map("tokens_used")
+  costEstimate      Float     @default(0.0) @map("cost_estimate") // token cost in USD
+  priceIdr          Int       @default(0) @map("price_idr") // package price charged to the client, in rupiah
+  prompt            String? // the client's change request, for revision jobs
+  model             String? // coding model chosen for this job
+  remediationRounds Int       @default(0) @map("remediation_rounds")
+  errorMessage      String?   @map("error_message")
+  startedAt         DateTime? @map("started_at")
+  finishedAt        DateTime? @map("finished_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  project      Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  spec         Spec?          @relation(fields: [specId], references: [id], onDelete: SetNull)
+  events       JobEvent[]
+  gateResults  GateResult[]
+  sessions     AgentSession[]
+  versions     Version[]
+  usageRecords UsageRecord[]
+
+  @@map("jobs")
+}
+
+model JobEvent {
+  id        String   @id @default(uuid())
+  jobId     String   @map("job_id")
+  agent     String // orchestrator | planner | backend | frontend | database | tester | reviewer | devops
+  eventType String   @map("event_type") // started | step | file_written | command_executed | test_run | gate_check | deployed | completed | failed | error
+  message   String // User-friendly Indonesian / clear client status
+  payload   String? // JSON serialized technical payload for operator dashboard
+  createdAt DateTime @default(now()) @map("created_at")
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("job_events")
+}
+
+model GateResult {
+  id        String   @id @default(uuid())
+  jobId     String   @map("job_id")
+  gate      String // build_check | lint_typecheck | unit_test | e2e_test | security_scan | launch_checklist | smoke_test
+  passed    Boolean  @default(false)
+  report    String // JSON string containing findings, issues, metrics
+  createdAt DateTime @default(now()) @map("created_at")
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("gate_results")
+}
+
+model Version {
+  id        String   @id @default(uuid())
+  projectId String   @map("project_id")
+  jobId     String?  @map("job_id")
+  commitRef String   @map("commit_ref") // Git commit sha or version hash
+  summary   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  job         Job?         @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  deployments Deployment[]
+
+  @@map("versions")
+}
+
+model Deployment {
+  id            String   @id @default(uuid())
+  projectId     String   @map("project_id")
+  versionId     String?  @map("version_id")
+  environment   String   @default("preview") // preview | production
+  url           String
+  port          Int?
+  status        String   @default("running") // running | stopped | failed
+  runtime       String   @default("process") // process | docker
+  pid           Int?
+  containerName String?  @map("container_name")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  project Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version Version? @relation(fields: [versionId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, status])
+  @@map("deployments")
+}
+
+model UsageRecord {
+  id           String   @id @default(uuid())
+  projectId    String?  @map("project_id")
+  jobId        String?  @map("job_id")
+  agent        String // agent role
+  model        String // model identifier e.g. z-ai/glm-5-3, poolside/laguna-xs-2.1
+  inputTokens  Int      @map("input_tokens")
+  outputTokens Int      @map("output_tokens")
+  costEstimate Float    @default(0.0) @map("cost_estimate")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  job     Job?     @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("usage_records")
+}
+
+model AgentSession {
+  id         String   @id @default(uuid())
+  jobId      String   @map("job_id")
+  agent      String
+  state      String // JSON serialized state machine checkpoint
+  checkpoint Int      @default(0)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("agent_sessions")
+}

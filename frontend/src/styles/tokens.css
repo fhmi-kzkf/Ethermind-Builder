@@ -1,0 +1,76 @@
+/*
+ * Ethermind design tokens.
+ *
+ * Direction (DESIGN.md): a warm parchment surface, near-black text, one accent. Light only: the product is a
+ * conversation and a set of forms read for long stretches, and the brand identity is the warm paper tone.
+ * Dials: ENERGY 2 / RHYTHM 3 / MOTION 1 (hover and focus only).
+ *
+ * Every text/background pair below was checked against WCAG AA (4.5:1 text, 3:1 for component edges).
+ */
+:root {
+  /* Surfaces */
+  --bg: #fcfbf8;
+  --surface: #ffffff;
+  --surface-warm: #f7f4ed;
+  --line: #e7e4dc;
+  --line-strong: #8f8c83; /* 3.4:1 on white: edges of inputs and controls */
+
+  /* Text */
+  --ink: #1c1c1c;
+  --muted: #5f5f5d;
+
+  /* The interface is achromatic. Marks (current page, step numbers, active tab) use ink. */
+  --accent: #1c1c1c;
+  --accent-soft: #efece4;
+  /* Indigo is reserved for inline links and the focus ring (DESIGN.md: --color-indigo-accent). 6.8:1 on parchment. */
+  --link: #3451b2;
+
+  /*
+   * The only chromatic moment: the prismatic horizon behind the hero. Owner direction, taken from the reference
+   * design. It never touches text, buttons or cards, except the round send button inside the prompt box.
+   */
+  --prism: linear-gradient(90deg, #82bcff 0%, #2483ff 28%, #ff66f4 52%, #ff3029 74%, #fe7b02 100%);
+
+  /* Real states only. Each pairs a text colour with its own soft background. */
+  --ok: #1d6b3f;
+  --ok-soft: #e8f3ec;
+  --warn: #8a5a00;
+  --warn-soft: #fbf1d9;
+  --bad: #b3261e;
+  --bad-soft: #fbeceb;
+
+  /* Type */
+  --font: 'Plus Jakarta Sans Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --weight-heading: 560;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.3rem + 2.2vw, 2.75rem);
+  --text-hero: clamp(2.25rem, 1.4rem + 3.8vw, 4rem);
+
+  /* Shape: three radii, used on purpose. Controls are small, panels medium, the prompt box large. */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+
+  /* Space */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+  --section-pad: clamp(48px, 8vw, 104px);
+  --gutter: clamp(16px, 4vw, 40px);
+  --container: 1200px;
+  --nav-h: 60px;
+
+  /* Elevation: only the prompt box, menus and dialogs lift off the page. */
+  --lift: 0 1px 0 rgba(28, 28, 28, 0.04), 0 18px 40px -18px rgba(28, 28, 28, 0.28);
+
+  --focus: 0 0 0 2px var(--bg), 0 0 0 4px var(--link);
+}

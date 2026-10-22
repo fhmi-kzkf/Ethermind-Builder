@@ -1,0 +1,106 @@
+# ==========================================================
+# Ethermind AI App Builder — root .gitignore
+# Berlaku untuk seluruh monorepo (backend/, frontend/, docs/)
+# ==========================================================
+
+# --- Node / dependensi ---
+node_modules/
+.pnp
+.pnp.js
+.yarn/
+
+# --- Build output ---
+dist/
+build/
+out/
+*.tsbuildinfo
+.vite/
+
+# --- Environment & secret ---
+.env
+.env.*
+!.env.example
+*.env
+backend/.env.bak-*
+serviceAccountKey*.json
+*.pem
+*.key
+*.crt
+!sandbox/certs/*.crt.example
+
+# --- Database lokal (SQLite) ---
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+backend/prisma/migrations/dev/
+
+# --- Storage runtime (workspace build, ekspor ZIP, pratinjau) ---
+backend/storage/
+backend/storage-test/
+storage/
+exports/
+
+# --- Log ---
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# --- Coverage & test artifacts ---
+coverage/
+*.lcov
+.nyc_output/
+playwright-report/
+test-results/
+
+# --- Cache & tooling ---
+.eslintcache
+.oxlintrc.cache
+.cache/
+.temp/
+tmp/
+jest-cache/
+.vitest/
+.rpt2_cache/
+
+# --- Editor & IDE ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# --- Dropbox/Ai sync noise ---
+*.tmp
+~$*
+
+# --- Firebase ---
+.firebase/
+firebase-debug.log*
+.firebaserc.local
+
+# --- Vercel / Netlify / deploy cache ---
+.vercel
+.netlify
+.wrangler/
+
+# --- Frontend static assets yang dihasilkan Vite saat preview build ---
+frontend/dist/
+
+# --- Sandbox runtime ---
+backend/sandbox/tmp/
+backend/sandbox/workspaces/

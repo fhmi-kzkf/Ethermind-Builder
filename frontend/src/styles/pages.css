@@ -1,0 +1,448 @@
+/* ---------- Home ---------- */
+/*
+ * The hero is the one place with colour: a prismatic horizon glowing up from behind the prompt box, fading into the
+ * parchment on every side. Text sits above it on plain parchment; the box and the chips are solid, so nothing is
+ * ever read over the gradient.
+ */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding-block: clamp(48px, 9vw, 104px) clamp(88px, 12vw, 152px);
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -12%;
+  right: -12%;
+  bottom: clamp(24px, 6vw, 72px);
+  height: clamp(200px, 30vw, 340px);
+  background: var(--prism);
+  border-radius: 50%;
+  filter: blur(clamp(48px, 7vw, 88px));
+  /* Driven by useHomeMotion; the defaults are the resting state when nothing animates. */
+  opacity: var(--horizon-o, 0.6);
+  transform: translateY(calc(var(--horizon-y, 0) * 1px)) scale(var(--horizon-s, 1));
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--bg) 0%, rgba(252, 251, 248, 0) 24%, rgba(252, 251, 248, 0) 72%, var(--bg) 100%);
+}
+.hero__inner {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-4);
+}
+.hero__title {
+  font-size: var(--text-hero);
+  max-width: 17ch;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+}
+.hero__lead {
+  max-width: 38rem;
+}
+/* Each word is masked so it can rise into place. The padding keeps descenders (g, y, k) from being clipped. */
+.word {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: top;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.word__in {
+  display: inline-block;
+}
+
+.composer {
+  width: min(100%, 44rem);
+  margin-top: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 0 1px rgba(28, 28, 28, 0.08), 0 20px 25px -5px rgba(28, 28, 28, 0.12), 0 8px 10px -6px rgba(28, 28, 28, 0.1);
+  text-align: left;
+}
+.composer:focus-within {
+  box-shadow: 0 0 0 1px rgba(28, 28, 28, 0.08), 0 20px 25px -5px rgba(28, 28, 28, 0.12), var(--focus);
+}
+.composer__input {
+  display: block;
+  width: 100%;
+  padding: var(--space-5) var(--space-5) var(--space-2);
+  border: 0;
+  background: transparent;
+  resize: none;
+  line-height: 1.55;
+  font-size: var(--text-lg);
+}
+.composer__input:focus-visible {
+  box-shadow: none;
+  outline: none;
+}
+.composer__input::placeholder {
+  color: var(--muted);
+}
+.composer__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-3) var(--space-5);
+}
+.composer__model {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.select--bare {
+  width: auto;
+  max-width: 100%;
+  min-height: 40px;
+  padding-block: 6px;
+  border-radius: 999px;
+  border-color: var(--line);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.composer__note {
+  padding: 0 var(--space-5) var(--space-4);
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+/* The send button is the one control allowed to carry the gradient. Its arrow is ink: 4.7:1 or better on every stop. */
+.send {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--prism);
+  color: var(--ink);
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+.send:hover:not(:disabled) {
+  filter: saturate(1.15) brightness(1.04);
+}
+.send:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.send:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+@media (max-width: 600px) {
+  .composer__input {
+    padding: var(--space-4) var(--space-4) var(--space-2);
+    font-size: var(--text-base);
+  }
+  .composer__bar {
+    padding-inline: var(--space-4);
+  }
+  .composer__note {
+    padding-inline: var(--space-4);
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  max-width: 44rem;
+}
+.chip {
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: var(--text-sm);
+  font-weight: 550;
+}
+.chip:hover {
+  background: var(--surface-warm);
+}
+
+.proof {
+  padding-block: var(--space-5) var(--space-7);
+}
+.shot {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 62rem;
+  margin-inline: auto;
+}
+.shot img,
+.shot video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--surface-warm);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--lift);
+}
+.shot figcaption {
+  text-align: center;
+}
+.usage {
+  margin-top: var(--space-4);
+  text-align: center;
+}
+
+/* Sections vary on purpose: a sticky heading beside a list, a plain list of rows, a dotted price list, a framed note. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: start;
+}
+.split__lead {
+  position: sticky;
+  top: calc(var(--nav-h) + var(--space-6));
+  display: grid;
+  gap: var(--space-4);
+}
+.split__title {
+  font-size: var(--text-3xl);
+}
+.steps {
+  display: grid;
+  gap: var(--space-6);
+}
+.step {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: var(--space-4);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+.step__n {
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent);
+}
+.step h3 {
+  font-size: var(--text-xl);
+}
+
+.examples {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--space-7);
+}
+.example {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+.example h3 {
+  font-size: var(--text-lg);
+}
+
+.receive {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: start;
+}
+.receive__list {
+  gap: var(--space-4);
+  font-size: var(--text-lg);
+}
+
+.limits {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--space-5) clamp(24px, 5vw, 72px);
+  padding: clamp(24px, 4vw, 48px);
+  border-radius: var(--radius-lg);
+}
+.limits h2 {
+  font-size: var(--text-2xl);
+}
+.limits__list {
+  display: grid;
+  gap: var(--space-3);
+}
+.limits__list li {
+  padding-left: var(--space-5);
+  position: relative;
+}
+.limits__list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 10px;
+  height: 2px;
+  background: var(--ink);
+}
+.limits__foot {
+  grid-column: 1 / -1;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line-strong);
+}
+
+.closing {
+  border-top: 1px solid var(--line);
+}
+.closing__inner {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+  text-align: center;
+}
+
+/* Each question is a native disclosure, so keyboard and screen readers work without script. */
+.faq {
+  display: grid;
+}
+.faq__item {
+  border-top: 1px solid var(--line);
+}
+.faq__item:last-of-type {
+  border-bottom: 1px solid var(--line);
+}
+.faq__item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 56px;
+  padding-block: var(--space-3);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.faq__item summary::-webkit-details-marker {
+  display: none;
+}
+.faq__item summary::after {
+  content: '+';
+  flex: none;
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  line-height: 1;
+}
+.faq__item[open] summary::after {
+  content: '\2212';
+}
+.faq__answer {
+  max-width: 62ch;
+  padding-bottom: var(--space-5);
+  color: var(--muted);
+}
+.faq__help {
+  padding-top: var(--space-4);
+}
+
+@media (max-width: 900px) {
+  .split,
+  .receive,
+  .limits {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .split__lead {
+    position: static;
+  }
+  .examples {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Generic page frame (pricing, security, legal ...) ---------- */
+.page-head {
+  padding-block: clamp(40px, 7vw, 88px) var(--space-6);
+}
+.page-head h1 {
+  font-size: var(--text-hero);
+  max-width: 20ch;
+  letter-spacing: -0.04em;
+}
+.page-head .lead {
+  margin-top: var(--space-4);
+}
+.prose {
+  max-width: 44rem;
+  display: grid;
+  gap: var(--space-4);
+}
+.prose h2 {
+  font-size: var(--text-2xl);
+  margin-top: var(--space-5);
+}
+.prose h3 {
+  font-size: var(--text-xl);
+  margin-top: var(--space-3);
+}
+.prose ul {
+  display: grid;
+  gap: var(--space-2);
+  padding-left: var(--space-5);
+  list-style: disc;
+}
+.prose a {
+  color: var(--link);
+}
+
+/* The one inverse moment on the page, after the reference. */
+.panel-dark {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: var(--radius-lg);
+  padding: clamp(24px, 5vw, 64px);
+}
+.panel-dark .lead,
+.panel-dark .muted {
+  color: #cfccc3;
+}
+.panel-dark .leader::after {
+  border-bottom-color: #6f6d66;
+}
+
+/* ---------- Hover feedback (MOTION 2) ---------- */
+.plan,
+.template-card,
+.work-row,
+.example,
+.check,
+.model-row {
+  transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+.plan:hover,
+.template-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+}
+.work-row:hover,
+.example:hover,
+.model-row:hover {
+  background: var(--surface-warm);
+}
+.chip,
+.btn,
+.tab,
+.nav__link {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.tag {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

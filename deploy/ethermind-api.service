@@ -1,0 +1,17 @@
+# /etc/systemd/system/ethermind-api.service
+# Backend + gerbang aplikasi dalam satu proses. Node 22 atau lebih baru (cadangan database live memakai node:sqlite).
+[Unit]
+Description=Ethermind AI App Builder (API dan gerbang aplikasi)
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+WorkingDirectory=/opt/ethermind/backend
+ExecStart=/usr/bin/node dist/server.js
+EnvironmentFile=/opt/ethermind/backend/.env
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

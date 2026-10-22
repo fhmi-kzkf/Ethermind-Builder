@@ -1,0 +1,217 @@
+/* Pricing, security, templates and legal pages. Tokens only. */
+
+/* ---------- Pricing ---------- */
+.plans {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}
+.plan {
+  display: grid;
+  gap: var(--space-5);
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.plan--pro {
+  border-color: var(--ink);
+  border-width: 2px;
+}
+.plan__head {
+  display: grid;
+  gap: var(--space-2);
+}
+.plan__head h2 {
+  font-size: var(--text-2xl);
+}
+.plan__price {
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.plan__engines {
+  display: grid;
+  gap: var(--space-1);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.model-list {
+  display: grid;
+}
+.model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) 5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-2) var(--space-5);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+.model-row:last-child {
+  border-bottom: 1px solid var(--line);
+}
+.model-row .tag {
+  justify-self: start;
+}
+.model-row strong {
+  font-weight: 600;
+}
+
+.notes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+.notes h3 {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-2);
+}
+
+/* ---------- Security ---------- */
+.facts {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--space-4) clamp(24px, 5vw, 72px);
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+.facts h3 {
+  font-size: var(--text-xl);
+}
+
+.checks {
+  display: grid;
+  counter-reset: check;
+}
+.check {
+  counter-increment: check;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  gap: var(--space-2) var(--space-4);
+  align-items: baseline;
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+.check::before {
+  content: counter(check);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.check h3 {
+  font-size: var(--text-lg);
+}
+.check p {
+  grid-column: 2;
+  color: var(--muted);
+}
+
+.caveats {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--space-5) clamp(24px, 5vw, 72px);
+  padding: clamp(24px, 4vw, 48px);
+  border-radius: var(--radius-lg);
+}
+.caveats h2 {
+  font-size: var(--text-2xl);
+}
+.caveats ul {
+  display: grid;
+  gap: var(--space-3);
+}
+.caveats li {
+  position: relative;
+  padding-left: var(--space-5);
+}
+.caveats li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 10px;
+  height: 2px;
+  background: var(--ink);
+}
+
+/* ---------- Templates ---------- */
+.filters {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.filters .field {
+  max-width: 28rem;
+}
+.chip[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+.template-group + .template-group {
+  margin-top: var(--space-7);
+}
+.template-group > h2 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-4);
+}
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+.template-card {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.template-card h3 {
+  font-size: var(--text-xl);
+}
+.template-card__prompt {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--surface-warm);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+.template-card .btn {
+  justify-self: start;
+}
+
+/* ---------- Legal ---------- */
+.draft-note {
+  display: inline-block;
+}
+
+@media (max-width: 900px) {
+  .plans,
+  .template-grid,
+  .notes,
+  .facts,
+  .caveats {
+    grid-template-columns: 1fr;
+  }
+  .model-row {
+    grid-template-columns: 1fr auto;
+  }
+  .model-row > :last-child {
+    grid-column: 1 / -1;
+  }
+  .check {
+    grid-template-columns: 2rem minmax(0, 1fr);
+  }
+  .check .tag {
+    grid-column: 2;
+    justify-self: start;
+  }
+}

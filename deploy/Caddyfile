@@ -1,0 +1,41 @@
+# Caddy untuk satu VPS. Ganti app.example.com dan apps.example.com dengan domain Anda.
+#
+# Dua domain terpisah, dengan sengaja:
+#   app.example.com   platform (halaman dan /api), akun pengguna ada di sini
+#   *.apps.example.com aplikasi buatan pengguna (pratinjau dan link live), lewat gerbang di :4100
+# Dipisah agar cookie dan skrip aplikasi klien tidak pernah berada di domain yang sama dengan akun platform.
+# Lebih baik lagi bila apps.example.com adalah domain terdaftar sendiri (bukan subdomain dari domain platform).
+#
+# Sertifikat wildcard hanya bisa lewat tantangan DNS, jadi Caddy perlu dibangun dengan plugin DNS penyedia Anda, mis. Cloudflare:
+#   xcaddy build --with github.com/caddy-dns/cloudflare
+# Token API Cloudflare dibatasi ke satu zona (izin: Zone DNS Edit) dan diberikan lewat environment, bukan ditulis di sini:
+#   CLOUDFLARE_API_TOKEN=...
+# DNS: satu rekaman wildcard  *.apps.example.com  A  <IP VPS>  (dan app.example.com  A  <IP VPS>).
+
+app.example.com {
+	encode zstd gzip
+
+	# API dan aliran kejadian build (SSE). flush_interval -1 mengirim setiap kejadian tanpa menunggu penyangga.
+	handle /api/* {
+		reverse_proxy 127.0.0.1:4000 {
+			flush_interval -1
+		}
+	}
+
+	# Frontend hasil `npm run build`.
+	handle {
+		root * /opt/ethermind/frontend/dist
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+*.apps.example.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+
+	# Semua aplikasi lewat satu pintu. Gerbang mencari aplikasi dari nama di alamat, menyalakannya bila tidur,
+	# dan membatasi laju per pengunjung. Caddy menambahkan X-Forwarded-For, yang dibaca gerbang sebagai alamat pengunjung.
+	reverse_proxy 127.0.0.1:4100
+}

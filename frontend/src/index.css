@@ -1,0 +1,8 @@
+@import '@fontsource-variable/plus-jakarta-sans';
+@import './styles/tokens.css';
+@import './styles/base.css';
+@import './styles/components.css';
+@import './styles/pages.css';
+@import './styles/marketing.css';
+@import './styles/workspace.css';
+@import './styles/builder.css';
